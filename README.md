@@ -30,8 +30,10 @@ python app.py
 
 Open:
 http://127.0.0.1:5000
+## 4. Live Demo 
+https://ecommerce-sales-customer-analytics-gwsi.onrender.com
 
-## 4. Demo account
+## 5. Demo account
 Register your own account from the Register page.
 
 Example:
@@ -39,7 +41,7 @@ Example:
 - Email: geetha@example.com
 - Password: geetha123
 
-## 5. Dataset
+## 6. Dataset
 Put your CSV file at:
 `data/ecommerce_data.csv`
 
@@ -59,7 +61,7 @@ The application accepts common column names. Recommended columns:
 
 If `sales` is not present but `price` and `quantity` are present, sales is calculated automatically.
 
-## 6. Login/Profile/Logout
+## 7. Login/Profile/Logout
 - `/register` creates an account.
 - `/login` authenticates the account.
 - `/dashboard` is protected and requires login.
