@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics Dashboard{% endblock %}
+
+{% block content %}
+
+{% if data.empty %}
+
+<div class="form-card" style="max-width: 650px; margin: 50px auto; text-align: center;">
+    <h1>📊 Welcome to Your Analytics Dashboard</h1>
+
+    <p>No dataset has been uploaded yet.</p>
+
+    <p>
+        Upload an e-commerce CSV file to view your
+        sales, product categories, pricing, ratings,
+        customer reviews and market insights.
+    </p>
+
+    <a class="btn" href="{{ url_for('upload') }}">
+        📁 Upload CSV File
+    </a>
+</div>
+
+{% else %}
+
+<h1>📊 E-Commerce Analytics Dashboard</h1>
+
+<p>Your uploaded dataset has been analyzed successfully.</p>
+
+<div class="kpis">
+
+    <div class="kpi">
+        <small>Total Products</small>
+        <b>{{ data.total_products }}</b>
+    </div>
+
+    <div class="kpi">
+        <small>Product Categories</small>
+        <b>{{ data.total_categories }}</b>
+    </div>
+
+    <div class="kpi">
+        <small>Total Sales</small>
+        <b>₹{{ "%.2f"|format(data.total_sales) }}</b>
+    </div>
+
+    <div class="kpi">
+        <small>Average Rating</small>
+        <b>{{ data.avg_rating }}</b>
+    </div>
+
+    <div class="kpi">
+        <small>Customer Reviews</small>
+        <b>{{ data.total_reviews }}</b>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="charts">
+
+    <div class="card">
+        <h3>Sales by Category</h3>
+        <canvas id="categoryChart"></canvas>
+    </div>
+
+    <div class="card">
+        <h3>Top Products</h3>
+        <canvas id="productChart"></canvas>
+    </div>
+
+    <div class="card">
+        <h3>Average Price by Category</h3>
+        <canvas id="priceChart"></canvas>
+    </div>
+
+    <div class="card">
+        <h3>Customer Ratings</h3>
+        <canvas id="ratingChart"></canvas>
+    </div>
+
+    <div class="card">
+        <h3>Customer Sentiment</h3>
+        <canvas id="sentimentChart"></canvas>
+    </div>
+
+</div>
+
+<div class="card">
+    <h2>🔎 Potential Market Opportunities</h2>
+
+    {% if data.opportunities %}
+
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Insight</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for item in data.opportunities %}
+            <tr>
+                <td>{{ item.product }}</td>
+                <td>{{ item.reason }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% else %}
+
+    <p>
+        No products currently meet the opportunity
+        criteria, or rating data is unavailable.
+    </p>
+
+    {% endif %}
+</div>
+
+<div class="card">
+    <h2>📈 Sales Forecast</h2>
+
+    {% if data.forecast %}
+
+    <table>
+        <thead>
+            <tr>
+                <th>Future Month</th>
+                <th>Estimated Sales</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for item in data.forecast %}
+            <tr>
+                <td>{{ item.period }}</td>
+                <td>₹{{ "%.2f"|format(item.value) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p>
+        Forecasts are estimates based on historical monthly
+        sales and are shown only when enough dated data exists.
+    </p>
+
+    {% else %}
+
+    <p>
+        At least four months of valid historical sales data
+        are needed to generate this basic forecast.
+    </p>
+
+    {% endif %}
+</div>
+
+<script>
+const categories = {{ data.top_categories | tojson }};
+const products = {{ data.top_products | tojson }};
+const prices = {{ data.price_by_category | tojson }};
+const ratings = {{ data.ratings | tojson }};
+const sentiments = {{ data.sentiment | tojson }};
+
+function makeBarChart(elementId, items, label) {
+    new Chart(document.getElementById(elementId), {
+        type: "bar",
+        data: {
+            labels: items.map(item => item.name),
+            datasets: [{
+                label: label,
+                data: items.map(item => item.value)
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+makeBarChart(
+    "categoryChart",
+    categories,
+    "Sales / Product Count"
+);
+
+makeBarChart(
+    "productChart",
+    products,
+    "Sales / Product Count"
+);
+
+makeBarChart(
+    "priceChart",
+    prices,
+    "Average Price"
+);
+
+function makeDoughnutChart(elementId, values) {
+    new Chart(document.getElementById(elementId), {
+        type: "doughnut",
+        data: {
+            labels: Object.keys(values),
+            datasets: [{
+                data: Object.values(values)
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+}
+
+makeDoughnutChart("ratingChart", ratings);
+makeDoughnutChart("sentimentChart", sentiments);
+</script>
+
+{% endif %}
+
+{% endblock %}

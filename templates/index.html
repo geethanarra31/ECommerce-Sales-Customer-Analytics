@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<section class="hero">
+<h1>E-Commerce Sales & Customer Analytics</h1>
+<p>Analyze products, prices, ratings, customer reviews, demand trends and market opportunities.</p>
+{% if logged_in %}
+<a class="btn" href="{{ url_for('dashboard') }}">Open Dashboard</a>
+{% else %}
+<a class="btn" href="{{ url_for('register') }}">Create Account</a>
+<a class="btn secondary" href="{{ url_for('login') }}">Login</a>
+{% endif %}
+</section>
+<section class="grid">
+<div class="card"><h3>📊 Sales Analysis</h3><p>Find top products and high-performing categories.</p></div>
+<div class="card"><h3>⭐ Customer Analytics</h3><p>Study ratings, reviews and basic sentiment.</p></div>
+<div class="card"><h3>💰 Pricing Patterns</h3><p>Compare average prices across categories.</p></div>
+<div class="card"><h3>🔎 Market Opportunities</h3><p>Identify products with strong sales and customer interest.</p></div>
+</section>
+{% endblock %}
